@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Jobs to Compare - APASS ARYX</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='APASS_ARIX.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-enhanced.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>APASS ARYX</h1>
+        <div class="header-actions">
+            <a href="/" class="btn">Home</a>
+            <a href="/jobs" class="btn">Job History</a>
+        </div>
+    </header>
+
+    
+    <div class="development-notice">
+        <div class="notice-container">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span><strong>Beta v1 - Under Development:</strong> This software is currently in development. Features may be incomplete or subject to change.</span>
+            <i class="fas fa-code"></i>
+        </div>
+    </div>
+
+    <main>
+        <div class="select-jobs-container">
+            <h2>Select Jobs to Compare</h2>
+            
+            {% set available = jobs|selectattr('type', 'equalto', 'single')|selectattr('status', 'equalto', 'completed')|list %}
+            <div class="selection-form">
+                <form action="{{ url_for('compare_jobs') }}" method="get" id="compareForm">
+                    <div class="job-selection-grid">
+                        <div class="form-group">
+                            <label for="job1">First Job:</label>
+                            <select id="job1" name="job1" required {% if available|length < 2 %}disabled{% endif %}>
+                                <option value="">-- Select first job --</option>
+                                {% for job in jobs %}
+                                    {% if job.type == 'single' and job.status == 'completed' %}
+                                        <option value="{{ job.id }}" 
+                                                data-filename="{{ job.filename }}"
+                                                data-date="{{ job.created_at|format_datetime }}"
+                                                data-engine="{{ job.engine }}"
+                                                {% if request.args.get('job1') == job.id %}selected{% endif %}>
+                                            {{ job.filename }} ({{ job.created_at|format_datetime }})
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <div class="job-preview" id="job1Preview">
+                                <div class="no-selection">No job selected</div>
+                            </div>
+                        </div>
+                        
+                        <div class="swap-container">
+                            <button type="button" id="swapBtn" class="btn swap-btn" {% if available|length < 2 %}disabled{% endif %}>
+                                <span class="swap-icon">⇄</span>
+                                <span>Swap</span>
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="job2">Second Job:</label>
+                            <select id="job2" name="job2" required {% if available|length < 2 %}disabled{% endif %}>
+                                <option value="">-- Select second job --</option>
+                                {% for job in jobs %}
+                                    {% if job.type == 'single' and job.status == 'completed' %}
+                                        <option value="{{ job.id }}" 
+                                                data-filename="{{ job.filename }}"
+                                                data-date="{{ job.created_at|format_datetime }}"
+                                                data-engine="{{ job.engine }}"
+                                                {% if request.args.get('job2') == job.id %}selected{% endif %}>
+                                            {{ job.filename }} ({{ job.created_at|format_datetime }})
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <div class="job-preview" id="job2Preview">
+                                <div class="no-selection">No job selected</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" id="compareSubmit" class="btn primary" {% if available|length < 2 %}disabled title="Need at least two completed single jobs"{% endif %}>Compare Jobs</button>
+                        <a href="/jobs" class="btn secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+            
+            {% if available|length < 2 %}
+                <div class="selection-warning">
+                    <p>
+                        <strong>Note:</strong> You need at least two completed single-file analysis jobs to perform a comparison.
+                    </p>
+                    <a href="/" class="btn">Start New Analysis</a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        <p>© APASS ARYX by Aiden Azad (V7lthronyx)</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const job1Select = document.getElementById('job1');
+            const job2Select = document.getElementById('job2');
+            const submitBtn = document.getElementById('compareSubmit');
+            const swapBtn = document.getElementById('swapBtn');
+            const job1Preview = document.getElementById('job1Preview');
+            const job2Preview = document.getElementById('job2Preview');
+
+            function enableAll(select) {
+                for (let option of select.options) option.disabled = false;
+            }
+            
+            function disableSame(src, dst) {
+                enableAll(dst);
+                const val = src.value;
+                if (val) {
+                    for (let option of dst.options) {
+                        if (option.value === val) {
+                            option.disabled = true;
+                            if (dst.value === val) dst.value = '';
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            function updateSubmit() {
+                const a = job1Select.value;
+                const b = job2Select.value;
+                const ok = a && b && a !== b;
+                if (submitBtn) submitBtn.disabled = !ok;
+            }
+            
+            function updatePreview(select, previewElement) {
+                if (!select || !previewElement) return;
+                
+                const selectedOption = select.options[select.selectedIndex];
+                if (select.value && selectedOption) {
+                    const filename = selectedOption.getAttribute('data-filename') || 'Unknown';
+                    const date = selectedOption.getAttribute('data-date') || 'Unknown date';
+                    const engine = selectedOption.getAttribute('data-engine') || 'Unknown engine';
+                    
+                    previewElement.innerHTML = `
+                        <div class="preview-content">
+                            <div class="preview-filename">${filename}</div>
+                            <div class="preview-detail">Date: ${date}</div>
+                            <div class="preview-detail">Engine: ${engine}</div>
+                        </div>
+                    `;
+                } else {
+                    previewElement.innerHTML = '<div class="no-selection">No job selected</div>';
+                }
+            }
+
+            // Initial sync (handles preselected via query params)
+            if (job1Select && job2Select) {
+                disableSame(job1Select, job2Select);
+                disableSame(job2Select, job1Select);
+                updateSubmit();
+                updatePreview(job1Select, job1Preview);
+                updatePreview(job2Select, job2Preview);
+            }
+
+            // Event listeners
+            job1Select?.addEventListener('change', () => { 
+                disableSame(job1Select, job2Select); 
+                updateSubmit(); 
+                updatePreview(job1Select, job1Preview);
+            });
+            
+            job2Select?.addEventListener('change', () => { 
+                disableSame(job2Select, job1Select); 
+                updateSubmit(); 
+                updatePreview(job2Select, job2Preview);
+            });
+
+            swapBtn?.addEventListener('click', () => {
+                const a = job1Select.value;
+                const b = job2Select.value;
+                job1Select.value = b;
+                job2Select.value = a;
+                disableSame(job1Select, job2Select);
+                disableSame(job2Select, job1Select);
+                updateSubmit();
+                updatePreview(job1Select, job1Preview);
+                updatePreview(job2Select, job2Preview);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - APASS ARYX</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='APASS_ARIX.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-enhanced.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>APASS ARYX</h1>
+        <a href="/" class="btn">Back to Home</a>
+    </header>
+
+    
+    <div class="development-notice">
+        <div class="notice-container">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span><strong>Beta v1 - Under Development:</strong> This software is currently in development. Features may be incomplete or subject to change.</span>
+            <i class="fas fa-code"></i>
+        </div>
+    </div>
+
+    <main>
+        <div class="error-container">
+            <h2>Error</h2>
+            <div class="error-message">
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© APASS ARYX by Aiden Azad (V7lthronyx)</p>
+    </footer>
+</body>
+</html>

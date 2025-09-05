@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - {{ app_version }} | {{ app_slogan or "No mask can hide. APASS ARYX sees through." }}</title>
+    <meta name="description" content="{{ app_tagline or 'APASS ARYX, part of the V7lthronyx_IX arsenal' }} - Advanced APK Analysis Platform for comprehensive security analysis and malware detection.">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='APASS_ARIX.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme-enhanced.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body>
+    
+    <nav class="nav-glass animate-fade">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="{{ url_for('static', filename='APASS_ARIX.png') }}" alt="{{ app_name }} Logo" class="nav-logo animate-bounce animate-delay-1">
+                <h1 class="animate-slide animate-delay-2">{{ app_name }}</h1>
+                <span class="status-badge info animate-scale animate-delay-3">{{ app_version }}</span>
+            </div>
+            <div class="nav-menu nav-menu-cyber">
+                <a href="/" class="nav-link nav-link-cyber active" data-tooltip="Home"><i class="fas fa-home"></i> Home</a>
+                <a href="/jobs" class="nav-link nav-link-cyber" data-tooltip="View Job History"><i class="fas fa-history"></i> Job History</a>
+                <a href="/status" class="nav-link nav-link-cyber" data-tooltip="System Status"><i class="fas fa-chart-line"></i> Status</a>
+                <a href="/compare" class="nav-link nav-link-cyber" data-tooltip="Compare Results"><i class="fas fa-balance-scale"></i> Compare</a>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    
+    <div class="glass-card development-notice animate-slide">
+        <div class="notice-container">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span><strong>Beta v1 - Under Development:</strong> This software is currently in development. Features may be incomplete or subject to change.</span>
+            <i class="fas fa-code"></i>
+        </div>
+    </div>
+
+    
+    <section class="hero animate-fade">
+        <div class="hero-content cyber-card">
+            <h1 class="animate-slide animate-delay-1">{{ app_slogan or "No mask can hide. APASS ARYX sees through." }}</h1>
+            <p class="animate-slide animate-delay-2">{{ app_tagline or "APASS ARYX, part of the V7lthronyx_IX arsenal" }}</p>
+            <div class="hero-tagline animate-fade animate-delay-3">
+                <em>Advanced APK Analysis Platform - Comprehensive security analysis and malware detection for Android applications</em>
+            </div>
+            <div class="hero-stats animate-scale animate-delay-4">
+                <div class="stat-item">
+                    <i class="fas fa-search animate-glow"></i>
+                    <span>Deep Analysis</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-shield-alt animate-glow"></i>
+                    <span>Security Focused</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-rocket animate-glow"></i>
+                    <span>Fast Results</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        
+        <section class="quick-actions">
+            <div class="container">
+                <h2>Getting Started</h2>
+                <div class="action-grid">
+                    <div class="action-card action-card-cyber card-cyber-hover" onclick="UIUtils.scrollTo('#analyze', 100)">
+                        <i class="fas fa-file-archive animate-cyber"></i>
+                        <h3>Single APK Analysis</h3>
+                        <p>Analyze a single APK file for security threats and vulnerabilities</p>
+                        <span class="action-arrow">→</span>
+                    </div>
+                    <div class="action-card action-card-cyber card-cyber-hover" onclick="UIUtils.scrollTo('#batch', 100)">
+                        <i class="fas fa-layer-group animate-cyber"></i>
+                        <h3>Batch Analysis</h3>
+                        <p>Process multiple APK files simultaneously for bulk analysis</p>
+                        <span class="action-arrow">→</span>
+                    </div>
+                    <div class="action-card action-card-cyber card-cyber-hover" onclick="UIUtils.scrollTo('.file-upload-area', 80)">
+                        <i class="fas fa-cloud-upload-alt animate-cyber"></i>
+                        <h3>Drag & Drop Upload</h3>
+                        <p>Simply drag and drop your APK files for instant analysis</p>
+                        <span class="action-arrow">→</span>
+                    </div>
+                    <div class="action-card action-card-cyber card-cyber-hover" onclick="window.location.href='/jobs'">
+                        <i class="fas fa-history animate-cyber"></i>
+                        <h3>Analysis History</h3>
+                        <p>View past analyses, download reports, and track job progress</p>
+                        <span class="action-arrow">→</span>
+                    </div>
+                    <div class="action-card action-card-cyber card-cyber-hover" onclick="window.location.href='/status'">
+                        <i class="fas fa-chart-line animate-cyber"></i>
+                        <h3>System Status</h3>
+                        <p>Monitor system health and resource availability</p>
+                        <span class="action-arrow">→</span>
+                    </div>
+                    <div class="action-card action-card-cyber card-cyber-hover" onclick="window.location.href='/compare'">
+                        <i class="fas fa-balance-scale animate-cyber"></i>
+                        <h3>Compare Results</h3>
+                        <p>Side-by-side comparison of analysis results for different APKs</p>
+                        <span class="action-arrow">→</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section class="analysis-interface">
+            <div class="container">
+                <div class="tab-container">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="analyze">
+                            <i class="fas fa-file-archive"></i>
+                            Single Analysis
+                        </button>
+                        <button class="tab-btn" data-tab="batch">
+                            <i class="fas fa-layer-group"></i>
+                            Batch Analysis
+                        </button>
+                        <button class="tab-btn" data-tab="upload">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            Drag & Drop
+                        </button>
+                        <button class="tab-btn" data-tab="status">
+                            <i class="fas fa-chart-line"></i>
+                            System Status
+                        </button>
+                    </div>
+
+                    <div class="tab-content">
+                        
+                        <div id="analyze" class="tab-pane active">
+                            <div class="form-container">
+                                <div class="form-header">
+                                    <h2><i class="fas fa-file-archive"></i> Single APK Analysis</h2>
+                                    <p>Upload and analyze a single APK file for comprehensive security assessment</p>
+                                </div>
+                                
+                                <form action="/analyze" method="post" enctype="multipart/form-data" class="analysis-form">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="apk_file">
+                                            <i class="fas fa-file-upload"></i> APK File
+                                        </label>
+                                        <div class="file-upload">
+                                            <input type="file" id="apk_file" name="apk_file" accept=".apk" required class="file-upload-input">
+                                            <div class="file-upload-area" id="single-upload-area">
+                                                <i class="fas fa-file-upload file-upload-icon"></i>
+                                                <div class="file-upload-text">Select APK File</div>
+                                                <div class="file-upload-hint">Click to browse or drag and drop your APK file here</div>
+                                            </div>
+                                        </div>
+                                        <div class="file-info is-hidden" id="single-file-info">
+                                            <div class="file-item">
+                                                <div>
+                                                    <i class="fas fa-file-archive"></i>
+                                                    <span class="file-name"></span>
+                                                    <span class="file-size"></span>
+                                                </div>
+                                                <button type="button" class="remove-file" aria-label="Remove file" title="Remove file">
+                                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-col">
+                                            <div class="form-group">
+                                                <label class="form-label" for="engine">
+                                                    <i class="fas fa-cog"></i> Analysis Engine
+                                                </label>
+                                                <select id="engine" name="engine" class="form-select">
+                                                    {% for e in engines %}
+                                                        <option value="{{ e.id }}" {% if not e.available %}disabled{% endif %}>
+                                                            {{ e.label }}{% if not e.available %} (unavailable){% endif %}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="form-help">Choose the analysis engine for processing</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-col">
+                                            <div class="form-group">
+                                                <label class="form-label" for="analysis_depth">
+                                                    <i class="fas fa-layer-group"></i> Analysis Depth
+                                                </label>
+                                                <select id="analysis_depth" name="analysis_depth" class="form-select">
+                                                    <option value="quick">Quick Scan (2-5 min)</option>
+                                                    <option value="standard" selected>Standard Analysis (5-15 min)</option>
+                                                    <option value="deep">Deep Analysis (15-30 min)</option>
+                                                </select>
+                                                <div class="form-help">Select analysis thoroughness vs speed</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fas fa-sliders-h"></i> Analysis Options
+                                        </label>
+                                        <div class="checkbox-grid">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="enable_dynamic" checked class="form-check-input" id="enable_dynamic">
+                                                <label class="form-check-label" for="enable_dynamic">
+                                                    <strong>Dynamic Analysis</strong><br>
+                                                    <small>Runtime behavior analysis</small>
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" name="enable_static" checked class="form-check-input" id="enable_static">
+                                                <label class="form-check-label" for="enable_static">
+                                                    <strong>Static Analysis</strong><br>
+                                                    <small>Code structure examination</small>
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" name="enable_network" checked class="form-check-input" id="enable_network">
+                                                <label class="form-check-label" for="enable_network">
+                                                    <strong>Network Analysis</strong><br>
+                                                    <small>Network traffic monitoring</small>
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" name="enable_malware" class="form-check-input" id="enable_malware">
+                                                <label class="form-check-label" for="enable_malware">
+                                                    <strong>Malware Detection</strong><br>
+                                                    <small>Advanced threat detection</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn primary large">
+                                            <i class="fas fa-play"></i>
+                                            Start Analysis
+                                        </button>
+                                        <button type="reset" class="btn secondary">
+                                            <i class="fas fa-undo"></i>
+                                            Reset Form
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        
+                        <div id="batch" class="tab-pane">
+                            <div class="form-container">
+                                <div class="form-header">
+                                    <h2><i class="fas fa-layer-group"></i> Batch Analysis</h2>
+                                    <p>Upload and analyze multiple APK files simultaneously</p>
+                                </div>
+                                
+                                <form action="/batch" method="post" enctype="multipart/form-data" class="analysis-form">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    
+                                    <div class="upload-section">
+                                        <div class="file-upload-area" id="batch-upload-area">
+                                            <div class="upload-content">
+                                                <i class="fas fa-files"></i>
+                                                <h3>Select Multiple APK Files</h3>
+                                                <p>Click to browse or drag and drop multiple APK files here</p>
+                                                <input type="file" id="apk_files" name="apk_files" accept=".apk" multiple required hidden>
+                                                <div class="files-list is-hidden" id="batch-files-list">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="batch_engine"><i class="fas fa-cog"></i> Analysis Engine</label>
+                                            <select id="batch_engine" name="engine" class="engine-select">
+                                                {% for e in engines %}
+                                                    <option value="{{ e.id }}" {% if not e.available %}disabled{% endif %}>
+                                                        {{ e.label }}{% if not e.available %} (unavailable){% endif %}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="batch_mode"><i class="fas fa-tasks"></i> Processing Mode</label>
+                                            <select id="batch_mode" name="batch_mode">
+                                                <option value="parallel">Parallel Processing (Faster)</option>
+                                                <option value="sequential">Sequential Processing (Less Resource Intensive)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="batch-options">
+                                        <h3><i class="fas fa-sliders-h"></i> Batch Options</h3>
+                                        <div class="checkbox-grid">
+                                            <label class="checkbox-item">
+                                                <input type="checkbox" name="continue_on_error" checked>
+                                                <span class="checkmark"></span>
+                                                Continue on Error
+                                                <small>Keep processing if one file fails</small>
+                                            </label>
+                                            <label class="checkbox-item">
+                                                <input type="checkbox" name="generate_summary" checked>
+                                                <span class="checkmark"></span>
+                                                Generate Summary Report
+                                                <small>Combined analysis report</small>
+                                            </label>
+                                            <label class="checkbox-item">
+                                                <input type="checkbox" name="email_notification">
+                                                <span class="checkmark"></span>
+                                                Email Notification
+                                                <small>Notify when batch completes</small>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn primary large">
+                                            <i class="fas fa-play-circle"></i>
+                                            Start Batch Analysis
+                                        </button>
+                                        <button type="button" class="btn secondary" onclick="clearBatchFiles()">
+                                            <i class="fas fa-trash"></i>
+                                            Clear Files
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        
+                        <div id="upload" class="tab-pane">
+                            <div class="drag-drop-container">
+                                <div class="drag-drop-area" id="drag-drop-zone">
+                                    <div class="drag-drop-content">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <h2>Drag & Drop APK Files</h2>
+                                        <p>Drop your APK files anywhere in this area</p>
+                                        <div class="upload-options">
+                                            <button type="button" class="btn primary" onclick="document.getElementById('drag-files').click()">
+                                                <i class="fas fa-folder-open"></i>
+                                                Browse Files
+                                            </button>
+                                            <input type="file" id="drag-files" accept=".apk" multiple hidden>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="upload-queue is-hidden" id="upload-queue">
+                                    <h3><i class="fas fa-list"></i> Upload Queue</h3>
+                                    <div class="queue-list" id="queue-list">
+                                        
+                                    </div>
+                                    <div class="queue-actions">
+                                        <button type="button" class="btn primary" onclick="processQueue()">
+                                            <i class="fas fa-play"></i>
+                                            Process Queue
+                                        </button>
+                                        <button type="button" class="btn secondary" onclick="clearQueue()">
+                                            <i class="fas fa-trash"></i>
+                                            Clear Queue
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div id="status" class="tab-pane">
+                            <div class="status-dashboard">
+                                <div class="status-header">
+                                    <h2><i class="fas fa-chart-line"></i> System Status</h2>
+                                    <button class="btn secondary" onclick="refreshStatus()">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Refresh
+                                    </button>
+                                </div>
+                                <div id="status-container">
+                                    <div class="loader"></div>
+                                    <div id="status-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section class="recent-jobs">
+            <div class="container">
+                <div class="section-header">
+                    <h2><i class="fas fa-history"></i> Recent Jobs</h2>
+                    <a href="/jobs" class="btn secondary">
+                        <i class="fas fa-list"></i>
+                        View All Jobs
+                    </a>
+                </div>
+                <div id="recent-jobs-list">
+                    <div class="loader small"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>{{ app_name }}</h3>
+                    <p>Advanced APK Analysis Platform for comprehensive security assessment</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/jobs">Job History</a></li>
+                        <li><a href="/status">System Status</a></li>
+                        <li><a href="/compare">Compare Results</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>About</h4>
+                    <p>Version: {{ app_version }}</p>
+                    <p>Author: {{ author }}</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 APASS ARYX by Aiden Azad (V7lthronyx). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    
+    <div id="loading-overlay" class="loading-overlay is-hidden">
+        <div class="loading-content">
+            <div class="loader large"></div>
+            <h3>Processing...</h3>
+            <p id="loading-message">Please wait while we process your request</p>
+            
+            
+            <div id="analysis-progress-container" class="progress-container is-hidden">
+                <div class="progress-bar-wrapper">
+                    <div id="analysis-progress-bar" class="progress-bar progress-initial"></div>
+                </div>
+                <div id="progress-percentage">0%</div>
+                <div id="progress-details" class="progress-details">
+                    <ul id="analysis-steps"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

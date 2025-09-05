@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status - APASS ARYX</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='APASS_ARIX.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="{{ url_for('static', filename='APASS_ARIX.png') }}" alt="APASS ARYX Logo" class="nav-logo">
+                <h1>APASS ARYX</h1>
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="/jobs" class="nav-link"><i class="fas fa-history"></i> Job History</a>
+                <a href="/status" class="nav-link active"><i class="fas fa-chart-line"></i> System Status</a>
+                <a href="/compare" class="nav-link"><i class="fas fa-balance-scale"></i> Compare</a>
+            </div>
+        </div>
+    </nav>
+
+    
+    <div class="development-notice">
+        <div class="notice-container">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span><strong>Beta v1 - Under Development:</strong> This software is currently in development. Features may be incomplete or subject to change.</span>
+            <i class="fas fa-code"></i>
+        </div>
+    </div>
+
+    <main>
+        <div class="container">
+            
+            <div class="page-header">
+                <div class="header-content">
+                    <div class="header-info">
+                        <h1><i class="fas fa-chart-line"></i> System Status</h1>
+                        <p>Monitor system health and resource availability</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn primary" onclick="refreshStatus()">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh Status
+                        </button>
+                        <button class="btn secondary" onclick="downloadDiagnostics()">
+                            <i class="fas fa-download"></i>
+                            Download Diagnostics
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="system-health-section">
+                <div class="health-overview">
+                    <div class="health-indicator">
+                        <div class="health-icon {{ 'healthy' if status.get('overall_health', 'unknown') == 'healthy' else 'warning' if status.get('overall_health', 'unknown') == 'warning' else 'critical' }}">
+                            {% if status.get('overall_health', 'unknown') == 'healthy' %}
+                                <i class="fas fa-check-circle"></i>
+                            {% elif status.get('overall_health', 'unknown') == 'warning' %}
+                                <i class="fas fa-exclamation-triangle"></i>
+                            {% else %}
+                                <i class="fas fa-times-circle"></i>
+                            {% endif %}
+                        </div>
+                        <div class="health-info">
+                            <h2>System Health</h2>
+                            <p class="health-status">{{ status.get('overall_health', 'Unknown').title() }}</p>
+                            <p class="health-description">
+                                {% if status.get('overall_health', 'unknown') == 'healthy' %}
+                                    All systems are operational and functioning normally.
+                                {% elif status.get('overall_health', 'unknown') == 'warning' %}
+                                    Some components may have issues but core functionality is available.
+                                {% else %}
+                                    Critical issues detected that may affect system functionality.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="health-metrics">
+                        <div class="metric">
+                            <div class="metric-value">{{ status.get('running_jobs', 0) }}</div>
+                            <div class="metric-label">Active Jobs</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">{{ status.get('completed_today', 0) }}</div>
+                            <div class="metric-label">Completed Today</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">{{ status.get('uptime', 'N/A') }}</div>
+                            <div class="metric-label">Uptime</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="status-grid">
+                
+                <div class="status-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-info-circle"></i> Application Information</h3>
+                        <div class="status-indicator healthy">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-table">
+                            <div class="info-row">
+                                <span class="label">Name:</span>
+                                <span class="value">{{ status.app.name }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Version:</span>
+                                <span class="value">{{ status.app.version }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Author:</span>
+                                <span class="value">{{ status.app.author }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Python Version:</span>
+                                <span class="value">{{ status.get('python_version', 'Unknown') }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Platform:</span>
+                                <span class="value">{{ status.get('platform', 'Unknown') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="status-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-folder"></i> Workspace</h3>
+                        <div class="status-indicator {{ 'healthy' if status.workspace.get('all_good', False) else 'warning' }}">
+                            <i class="fas {{ 'fa-check-circle' if status.workspace.get('all_good', False) else 'fa-exclamation-triangle' }}"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="workspace-items">
+                            <div class="workspace-item">
+                                <div class="item-status {{ 'success' if status.workspace.src else 'error' }}">
+                                    <i class="fas {{ 'fa-check' if status.workspace.src else 'fa-times' }}"></i>
+                                </div>
+                                <div class="item-info">
+                                    <span class="item-name">Source Directory</span>
+                                    <span class="item-status-text">{{ 'Available' if status.workspace.src else 'Missing' }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="workspace-item">
+                                <div class="item-status {{ 'success' if status.workspace.resources else 'error' }}">
+                                    <i class="fas {{ 'fa-check' if status.workspace.resources else 'fa-times' }}"></i>
+                                </div>
+                                <div class="item-info">
+                                    <span class="item-name">Resources Directory</span>
+                                    <span class="item-status-text">{{ 'Available' if status.workspace.resources else 'Missing' }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="workspace-item">
+                                <div class="item-status {{ 'success' if status.workspace.scripts else 'error' }}">
+                                    <i class="fas {{ 'fa-check' if status.workspace.scripts else 'fa-times' }}"></i>
+                                </div>
+                                <div class="item-info">
+                                    <span class="item-name">Scripts Directory</span>
+                                    <span class="item-status-text">{{ 'Available' if status.workspace.scripts else 'Missing' }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="workspace-item">
+                                <div class="item-status {{ 'success' if status.workspace.get('config_files', False) else 'warning' }}">
+                                    <i class="fas {{ 'fa-check' if status.workspace.get('config_files', False) else 'fa-exclamation-triangle' }}"></i>
+                                </div>
+                                <div class="item-info">
+                                    <span class="item-name">Configuration Files</span>
+                                    <span class="item-status-text">{{ 'Available' if status.workspace.get('config_files', False) else 'Check Required' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="status-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tools"></i> Analysis Tools</h3>
+                        <div class="status-indicator {{ 'healthy' if status.tools.get('all_ready', False) else 'warning' }}">
+                            <i class="fas {{ 'fa-check-circle' if status.tools.get('all_ready', False) else 'fa-exclamation-triangle' }}"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="tools-grid">
+                            {% for tool_name, tool_status in status.tools.items() %}
+                                {% if tool_name != 'all_ready' %}
+                                    <div class="tool-item">
+                                        <div class="tool-status {{ 'available' if tool_status.get('available', False) else 'unavailable' }}">
+                                            <i class="fas {{ 'fa-check' if tool_status.get('available', False) else 'fa-times' }}"></i>
+                                        </div>
+                                        <div class="tool-info">
+                                            <span class="tool-name">{{ tool_name|title }}</span>
+                                            {% if tool_status.get('version') %}
+                                                <span class="tool-version">v{{ tool_status.version }}</span>
+                                            {% endif %}
+                                            <span class="tool-status-text">
+                                                {{ 'Available' if tool_status.get('available', False) else 'Not Available' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="status-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-mobile-alt"></i> Device Status</h3>
+                        <div class="status-indicator {{ 'healthy' if status.devices.get('connected', 0) > 0 else 'warning' }}">
+                            <i class="fas {{ 'fa-check-circle' if status.devices.get('connected', 0) > 0 else 'fa-exclamation-triangle' }}"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="device-summary">
+                            <div class="device-count">
+                                <div class="count-item">
+                                    <div class="count-value">{{ status.devices.get('connected', 0) }}</div>
+                                    <div class="count-label">Connected</div>
+                                </div>
+                                <div class="count-item">
+                                    <div class="count-value">{{ status.devices.get('authorized', 0) }}</div>
+                                    <div class="count-label">Authorized</div>
+                                </div>
+                                <div class="count-item">
+                                    <div class="count-value">{{ status.devices.get('emulators', 0) }}</div>
+                                    <div class="count-label">Emulators</div>
+                                </div>
+                            </div>
+                            
+                            {% if status.devices.get('list') %}
+                                <div class="device-list">
+                                    <h4>Connected Devices:</h4>
+                                    {% for device in status.devices.list %}
+                                        <div class="device-item">
+                                            <div class="device-icon">
+                                                <i class="fas {{ 'fa-mobile-alt' if not device.get('is_emulator', False) else 'fa-laptop' }}"></i>
+                                            </div>
+                                            <div class="device-info">
+                                                <span class="device-id">{{ device.id }}</span>
+                                                <span class="device-status {{ device.status }}">{{ device.status.title() }}</span>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="status-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-server"></i> System Resources</h3>
+                        <div class="status-indicator {{ 'healthy' if status.system.get('healthy', False) else 'warning' }}">
+                            <i class="fas {{ 'fa-check-circle' if status.system.get('healthy', False) else 'fa-exclamation-triangle' }}"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="resource-meters">
+                            <div class="resource-item">
+                                <div class="resource-header">
+                                    <span class="resource-name">CPU Usage</span>
+                                    <span class="resource-value">{{ status.system.get('cpu_percent', 0) }}%</span>
+                                </div>
+                                <div class="resource-bar">
+                                    <div class="resource-progress" data-progress="{{ status.system.get('cpu_percent', 0) }}"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="resource-item">
+                                <div class="resource-header">
+                                    <span class="resource-name">Memory Usage</span>
+                                    <span class="resource-value">{{ status.system.get('memory_percent', 0) }}%</span>
+                                </div>
+                                <div class="resource-bar">
+                                    <div class="resource-progress" data-progress="{{ status.system.get('memory_percent', 0) }}"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="resource-item">
+                                <div class="resource-header">
+                                    <span class="resource-name">Disk Usage</span>
+                                    <span class="resource-value">{{ status.system.get('disk_percent', 0) }}%</span>
+                                </div>
+                                <div class="resource-bar">
+                                    <div class="resource-progress" data-progress="{{ status.system.get('disk_percent', 0) }}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="system-info">
+                            <div class="info-row">
+                                <span class="label">Available Memory:</span>
+                                <span class="value">{{ status.system.get('available_memory', 'Unknown') }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Free Disk Space:</span>
+                                <span class="value">{{ status.system.get('free_disk', 'Unknown') }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Load Average:</span>
+                                <span class="value">{{ status.system.get('load_average', 'Unknown') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="status-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> Analysis Queue</h3>
+                        <div class="status-indicator {{ 'healthy' if status.queue.get('healthy', False) else 'warning' }}">
+                            <i class="fas {{ 'fa-check-circle' if status.queue.get('healthy', False) else 'fa-exclamation-triangle' }}"></i>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="queue-stats">
+                            <div class="queue-item">
+                                <div class="queue-value running">{{ status.queue.get('running', 0) }}</div>
+                                <div class="queue-label">Running</div>
+                            </div>
+                            <div class="queue-item">
+                                <div class="queue-value pending">{{ status.queue.get('pending', 0) }}</div>
+                                <div class="queue-label">Pending</div>
+                            </div>
+                            <div class="queue-item">
+                                <div class="queue-value completed">{{ status.queue.get('completed', 0) }}</div>
+                                <div class="queue-label">Completed</div>
+                            </div>
+                            <div class="queue-item">
+                                <div class="queue-value failed">{{ status.queue.get('failed', 0) }}</div>
+                                <div class="queue-label">Failed</div>
+                            </div>
+                        </div>
+                        
+                        {% if status.queue.get('recent_jobs') %}
+                            <div class="recent-jobs">
+                                <h4>Recent Jobs:</h4>
+                                {% for job in status.queue.recent_jobs[:5] %}
+                                    <div class="job-item">
+                                        <div class="job-status {{ job.status }}">
+                                            <i class="fas {{ 'fa-spinner fa-spin' if job.status == 'running' else 'fa-check' if job.status == 'completed' else 'fa-times' }}"></i>
+                                        </div>
+                                        <div class="job-info">
+                                            <span class="job-id">{{ job.id }}</span>
+                                            <span class="job-time">{{ job.time }}</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            
+            {% if status.get('logs') %}
+                <div class="logs-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-file-alt"></i> Recent System Logs</h2>
+                        <div class="section-actions">
+                            <button class="btn secondary small" onclick="toggleLogs()">
+                                <i class="fas fa-eye"></i>
+                                Toggle Logs
+                            </button>
+                            <button class="btn secondary small" onclick="clearLogs()">
+                                <i class="fas fa-trash"></i>
+                                Clear Logs
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="logs-container" id="logs-container">
+                        <div class="logs-content">
+                            {% for log_entry in status.logs %}
+                                <div class="log-entry {{ log_entry.level }}">
+                                    <div class="log-time">{{ log_entry.time }}</div>
+                                    <div class="log-level">{{ log_entry.level.upper() }}</div>
+                                    <div class="log-message">{{ log_entry.message }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            
+            <div class="quick-actions-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-rocket"></i> Quick Actions</h2>
+                </div>
+                
+                <div class="action-cards">
+                    <div class="action-card" onclick="refreshStatus()">
+                        <i class="fas fa-sync-alt"></i>
+                        <h3>Refresh Status</h3>
+                        <p>Update all system information</p>
+                    </div>
+                    
+                    <div class="action-card" onclick="checkConnectivity()">
+                        <i class="fas fa-wifi"></i>
+                        <h3>Test Connectivity</h3>
+                        <p>Check network and device connections</p>
+                    </div>
+                    
+                    <div class="action-card" onclick="cleanupSystem()">
+                        <i class="fas fa-broom"></i>
+                        <h3>System Cleanup</h3>
+                        <p>Clean temporary files and logs</p>
+                    </div>
+                    
+                    <div class="action-card" onclick="downloadDiagnostics()">
+                        <i class="fas fa-download"></i>
+                        <h3>Download Report</h3>
+                        <p>Get system diagnostics report</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>APASS ARYX</h3>
+                    <p>Advanced APK Analysis Platform for comprehensive security assessment</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/jobs">Job History</a></li>
+                        <li><a href="/status">System Status</a></li>
+                        <li><a href="/compare">Compare Results</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 APASS ARYX by Aiden Azad (V7lthronyx). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Status page specific functionality
+        function refreshStatus() {
+            const btn = event.target.closest('button');
+            const icon = btn.querySelector('i');
+            
+            // Add loading state
+            icon.className = 'fas fa-spinner fa-spin';
+            btn.disabled = true;
+            
+            // Simulate refresh
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+
+        function checkConnectivity() {
+            // Test connectivity
+            showNotification('Testing connectivity...', 'info');
+            
+            fetch('/api/test-connectivity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Connectivity test passed', 'success');
+                } else {
+                    showNotification('Connectivity issues detected: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('Failed to test connectivity', 'error');
+            });
+        }
+
+        function cleanupSystem() {
+            if (confirm('This will clean temporary files and logs. Continue?')) {
+                showNotification('Starting system cleanup...', 'info');
+                
+                fetch('/api/cleanup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('System cleanup completed', 'success');
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showNotification('Cleanup failed: ' + data.error, 'error');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Failed to cleanup system', 'error');
+                });
+            }
+        }
+
+        function downloadDiagnostics() {
+            showNotification('Generating diagnostics report...', 'info');
+            
+            fetch('/api/diagnostics', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error('Failed to generate report');
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `apass-aryx-diagnostics-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                showNotification('Diagnostics report downloaded', 'success');
+            })
+            .catch(error => {
+                showNotification('Failed to download diagnostics', 'error');
+            });
+        }
+
+        function toggleLogs() {
+            const logsContainer = document.getElementById('logs-container');
+            if (logsContainer.style.display === 'none') {
+                logsContainer.style.display = 'block';
+            } else {
+                logsContainer.style.display = 'none';
+            }
+        }
+
+        function clearLogs() {
+            if (confirm('Clear all system logs? This action cannot be undone.')) {
+                fetch('/api/clear-logs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Logs cleared successfully', 'success');
+                        location.reload();
+                    } else {
+                        showNotification('Failed to clear logs: ' + data.error, 'error');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Failed to clear logs', 'error');
+                });
+            }
+        }
+
+        // Initialize resource progress bars
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBars = document.querySelectorAll('.resource-progress[data-progress]');
+            progressBars.forEach(bar => {
+                const progress = parseInt(bar.dataset.progress);
+                bar.style.width = progress + '%';
+                
+                // Add color based on usage level
+                if (progress > 80) {
+                    bar.classList.add('critical');
+                } else if (progress > 60) {
+                    bar.classList.add('warning');
+                } else {
+                    bar.classList.add('normal');
+                }
+            });
+        });
+
+        // Auto-refresh status every 30 seconds
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                // Only refresh if page is visible
+                fetch('/api/status')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update specific elements without full page reload
+                        updateStatusElements(data);
+                    })
+                    .catch(error => {
+                        console.error('Failed to update status:', error);
+                    });
+            }
+        }, 30000);
+
+        function updateStatusElements(data) {
+            // Update running jobs count
+            const runningCount = document.getElementById('running-count');
+            if (runningCount && data.running_jobs !== undefined) {
+                runningCount.textContent = data.running_jobs;
+            }
+
+            // Update other dynamic elements as needed
+            // This would be expanded based on the actual status data structure
+        }
+    </script>
+</body>
+</html>

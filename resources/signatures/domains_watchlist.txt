@@ -1,0 +1,65 @@
+# High-signal suspicious domains patterns (simple list, used by network analyzers)
+# Lines starting with # are comments
+# Last updated: 2023-11-15
+
+# ===== GENERAL TRACKING & ANALYTICS PATTERNS =====
+ads.*
+track.*
+metrics.*
+analytics.*
+telemetry.*
+beacon.*
+stats.*
+pixel.*
+counter.*
+
+# ===== APK DOWNLOAD SITES (potentially unsafe) =====
+*.apkcombo.com
+*.apkpure.com
+*.apkplz.net
+*.apkhere.com
+*.apkmirror.com
+*.apkfollow.com
+*.apkmonk.com
+*.apkdl.net
+
+# ===== MAJOR ADVERTISING & TRACKING NETWORKS =====
+*.mopub.com
+*.adjust.com
+*.chartboost.com
+*.appodeal.com
+*.adcolony.com
+*.doubleclick.net
+*.googlesyndication.com
+*.googleadservices.com
+*.google-analytics.com
+*.facebook.com/tr
+*.flurry.com
+*.appsflyer.com
+*.amplitude.com
+*.branch.io
+*.crashlytics.com
+*.bugsnag.com
+*.sentry.io
+*.mixpanel.com
+*.kochava.com
+*.unity3d.com/stats
+*.firebase.com/analytics
+*.onesignal.com
+
+# ===== MALWARE & POTENTIALLY UNWANTED PROGRAMS =====
+*.malware.*
+*.adware.*
+*.spyware.*
+*.ransomware.*
+*.worm.*
+*.trojan.*
+*.botnet.*
+*.phishing.*
+
+# ===== CRYPTOCURRENCY MINERS =====
+*.coinhive.com
+*.cryptoloot.pro
+*.crypto-loot.com
+*.coin-hive.com
+*.minr.pw

@@ -1,0 +1,113 @@
+{
+  "version": "1.1",
+  "generated": "2025-08-31T06:45:00Z",
+  "updated": "2025-08-31T08:30:00Z",
+  "description": "Comprehensive IOC collection for advanced threat detection",
+  "organization": {
+    "name": "Security Research Team",
+    "contact": "security@example.org"
+  },
+  "sources": ["local", "threat_intelligence", "incident_response"],
+  "threat_groups": [
+    {
+      "name": "APT-X",
+      "description": "Advanced persistent threat group targeting financial institutions",
+      "confidence": "high",
+      "mitre_att_ck": ["T1566", "T1190", "T1133"],
+      "indicators": {
+        "ips": [
+          {
+            "value": "45.146.165.23",
+            "first_seen": "2025-07-15T00:00:00Z",
+            "last_seen": "2025-08-30T00:00:00Z",
+            "severity": "high",
+            "confidence": "high",
+            "context": "Command and control server for malware distribution"
+          },
+          {
+            "value": "185.215.113.51",
+            "first_seen": "2025-08-01T00:00:00Z", 
+            "last_seen": "2025-08-29T00:00:00Z",
+            "severity": "medium",
+            "confidence": "medium",
+            "context": "Associated with phishing campaign"
+          }
+        ],
+        "domains": [
+          {
+            "value": "malicious.example",
+            "first_seen": "2025-07-20T00:00:00Z",
+            "last_seen": "2025-08-28T00:00:00Z", 
+            "severity": "high",
+            "confidence": "high",
+            "context": "Primary C2 domain for APT-X operations"
+          }
+        ],
+        "sha256": [
+          {
+            "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "file_name": "dropper.exe",
+            "file_type": "PE32 executable",
+            "first_seen": "2025-07-10T00:00:00Z",
+            "severity": "critical",
+            "confidence": "high",
+            "context": "Initial infection vector"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cybercrime-Y",
+      "description": "Financially motivated cybercrime group",
+      "confidence": "medium",
+      "mitre_att_ck": ["T1566.001", "T1204.002"],
+      "indicators": {
+        "domains": [
+          {
+            "value": "cnc.badhost.io",
+            "first_seen": "2025-08-10T00:00:00Z",
+            "last_seen": "2025-08-31T00:00:00Z",
+            "severity": "high", 
+            "confidence": "medium",
+            "context": "Command and control server"
+          }
+        ],
+        "urls": [
+          {
+            "value": "hxxp://bad.example/payload.apk",
+            "first_seen": "2025-08-15T00:00:00Z",
+            "severity": "high",
+            "confidence": "high",
+            "context": "Delivers mobile malware"
+          },
+          {
+            "value": "hxxp://cnc.badhost.io/update",
+            "first_seen": "2025-08-20T00:00:00Z",
+            "severity": "medium",
+            "confidence": "medium",
+            "context": "Used for malware updates"
+          }
+        ],
+        "sha256": [
+          {
+            "value": "0000000000000000000000000000000000000000000000000000000000000000",
+            "file_name": "update.bin",
+            "file_type": "data",
+            "first_seen": "2025-08-18T00:00:00Z",
+            "severity": "medium",
+            "confidence": "medium",
+            "context": "Secondary payload"
+          }
+        ]
+      }
+    }
+  ],
+  "notes": "Production-ready IOC set with enhanced context and organization by threat actor.",
+  "tags": ["apt", "financial", "mobile", "phishing"],
+  "recommended_actions": {
+    "block_ips": true,
+    "block_domains": true,
+    "scan_for_hashes": true,
+    "additional_monitoring": "Monitor for lateral movement from compromised systems"
+  }
+}
